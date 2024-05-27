@@ -27,10 +27,10 @@ sudo dpkg -P --force-all $(dpkg -l | grep "nvidia-" | grep -v lib | awk '{print 
 sudo ubuntu-drivers install
 ```
 
-## Use with JupiterLab
-If you use JupiterLab then you need to add a new kernel with a conda environment:
+## Use with JupyterLab
+If you use JupyterLab then you need to add a new kernel with a conda environment:
 ```console
-conda activate gptq
+conda activate aist
 conda install ipykernel
 ipython kernel install --user --name=aist
 ```
