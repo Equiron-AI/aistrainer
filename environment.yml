@@ -8,5 +8,7 @@ dependencies:
   - nvidia/label/cuda-12.1.0::libcublas
   - pytorch-cuda=12.1
   - pytorch=2.3.0
+  - pip:
+    - flash-attn>=2.5.8
 variables:
   TOKENIZERS_PARALLELISM: false

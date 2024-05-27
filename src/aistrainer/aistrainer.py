@@ -14,7 +14,11 @@ from aistrainer.models import ModelsFactory
 
 
 logger = logging.getLogger(__name__)
-deepspeed.init_distributed()
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+if torch.cuda.is_available():
+    deepspeed.init_distributed()
 
 
 class Aist:
@@ -22,9 +26,11 @@ class Aist:
         self.base_model_id = base_model_id
         self.model_config = ModelsFactory().get_model_config(base_model_id)
         self.tokenizer = self.model_config.tokenizer
+        self.torch_compile = False
         self.device_map = "auto"
         self.deepspeed = None
         if torch.cuda.is_available():
+            self.torch_compile = True
             self.device_map = None
             self.deepspeed = self.get_deepspeed_config()
         self.bf16 = False
@@ -38,7 +44,6 @@ class Aist:
                 self.fp16 = True
         else:
             self.bf16 = True
-            self.attn_implementation = "flash_attention_2"
 
     def get_instruction(self, record):
         return self.model_config.apply_chat_template(record)
