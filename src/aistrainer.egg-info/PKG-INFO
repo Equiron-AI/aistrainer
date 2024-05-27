@@ -40,6 +40,11 @@ conda env create -f environment-cpu.yml
 ``` 
 These steps ensure that all necessary dependencies are correctly configured, allowing the Aistrainer library to function optimally.
 
+## Installation
+```console
+pip install aistrainer
+``` 
+
 ## Updating operating system drivers
 
 The following commands allow you to update operating system drivers:

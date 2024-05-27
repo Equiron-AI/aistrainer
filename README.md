@@ -19,6 +19,11 @@ conda env create -f environment-cpu.yml
 ``` 
 These steps ensure that all necessary dependencies are correctly configured, allowing the Aistrainer library to function optimally.
 
+## Installation
+```console
+pip install aistrainer
+``` 
+
 ## Updating operating system drivers
 
 The following commands allow you to update operating system drivers:
@@ -66,3 +71,34 @@ Swap should be used only in case of extreme necessity, as it can significantly s
 The following LLM models are supported:
 - Phi-3-medium-128k-instruct
 - c4ai-command-r-v01
+
+## Training example
+```python
+import logging
+from aistrainer.aistrainer import Aist
+
+logging.basicConfig(level=logging.INFO)
+
+aist = Aist("CohereForAI/c4ai-command-r-v01")
+
+aist.prepare_dataset("equiron-ai/safety",
+                     eval=False,  # use the entire dataset only for training
+                     max_len_percentile=100)  # percentile cutting off the longest lines
+
+aist.train("safety_adapter",
+           rank=16,
+           lora_alpha=32,
+           batch_size=4,  # suitable for most cases, but should be reduced if there is not enough GPU memory
+           gradient_steps=2)  # suitable for most cases, but should be reduced if there is not enough GPU memory
+```
+
+## Combining/merging LoRA adapters
+```python
+from aistrainer.aistrainer import Aist
+
+aist = Aist("CohereForAI/c4ai-command-r-v01")
+aist.merge("model_with_safety", "safety_adapter")
+```
+
+## Known issues
+Model fine-tuning and combining adapters cannot be performed in the same bash script or Jupyter session. It is essential to separate the processes of fine-tuning and adapter merging. When using JupyterLab, you must restart the kernel after completing each of these processes to ensure proper execution and avoid conflicts.

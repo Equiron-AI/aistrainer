@@ -1,10 +1,14 @@
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 import datasets
 import torch
 import numpy as np
 import torch._dynamo
 import logging
 import json
-import os
 import gc
 import deepspeed
 from deepspeed.accelerator import get_accelerator
@@ -14,8 +18,6 @@ from aistrainer.models import ModelsFactory
 
 
 logger = logging.getLogger(__name__)
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 if torch.cuda.is_available():
     deepspeed.init_distributed()
