@@ -47,3 +47,5 @@ sudo swapon /swapfile
 ```
 
 These commands will increase the swap space, providing additional virtual memory that can help manage the large memory requirements during model fine-tuning.
+
+Swap should be used only in case of extreme necessity, as it can significantly slow down the training process. To ensure that the system uses swap space minimally, you should add the following line to the **/etc/sysctl.conf file**: **vm.swappiness=1**. This setting minimizes the swappiness, making the system less likely to swap processes out of physical memory and thus relying more on RAM, which is much faster than swap space.
