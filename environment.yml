@@ -1,0 +1,12 @@
+name: aist
+channels:
+  - pytorch
+  - conda-forge
+  - nvidia/label/cuda-12.1.0
+dependencies:
+  - python=3.11
+  - nvidia/label/cuda-12.1.0::libcublas
+  - pytorch-cuda=12.1
+  - pytorch=2.3.0
+variables:
+  TOKENIZERS_PARALLELISM: false

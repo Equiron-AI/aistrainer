@@ -1,0 +1,64 @@
+Metadata-Version: 2.1
+Name: aistrainer
+Version: 0.0.1
+Summary: AI Specialization Trainer for LLM model
+Author-email: Vladimir Petrukhin <man4j@ya.ru>
+Project-URL: Homepage, https://github.com/Equiron-AI/aistrainer
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: transformers>=4.41.1
+Requires-Dist: datasets>=2.19.1
+Requires-Dist: peft>=0.11.1
+Requires-Dist: deepspeed==0.14.0
+Requires-Dist: mpi4py>=3.1.6
+Requires-Dist: sentencepiece>=0.2.0
+Requires-Dist: flash-attn>=2.5.8
+
+# Welcome to AISTrainer!
+
+Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about StackEdit, you can read me. If you want to play with Markdown, you can edit me. Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar.
+
+#System tools
+sudo apt install -y python3-pip cmake mpich
+
+#Установить окружение
+conda env create -f environment.yml
+conda activate aist
+
+#Обновить окружение
+conda activate aist
+conda env update -f environment.yml --prune
+
+#Обновление драйверов:
+sudo rm -r /var/lib/dkms/nvidia
+sudo dpkg -P --force-all $(dpkg -l | grep "nvidia-" | grep -v lib | awk '{print $2}')
+sudo ubuntu-drivers install
+
+#Resize swap
+sudo swapoff -a
+sudo fallocate -l 50G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+#Add jupyter kernel
+conda activate gptq
+conda install ipykernel
+ipython kernel install --user --name=aist
+
+#CUDA
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt update
+sudo apt -y install cuda-toolkit-12-2
+echo -e '
+export CUDA_HOME=/usr/local/cuda
+export PATH=${CUDA_HOME}/bin:${PATH}
+export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:$LD_LIBRARY_PATH
+' >> ~/.bashrc

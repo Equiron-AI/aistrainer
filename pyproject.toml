@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aistrainer"
+version = "0.0.1"
+authors = [
+  { name="Vladimir Petrukhin", email="man4j@ya.ru" },
+]
+description = "AI Specialization Trainer for LLM model"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "transformers>=4.41.1",
+  "datasets>=2.19.1",
+  "peft>=0.11.1",
+  "deepspeed==0.14.0",
+  "mpi4py>=3.1.6",
+  "sentencepiece>=0.2.0",
+  "flash-attn>=2.5.8"
+]
+
+[project.urls]
+Homepage = "https://github.com/Equiron-AI/aistrainer"

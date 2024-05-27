@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+src/aistrainer/aistrainer.py
+src/aistrainer/models.py
+src/aistrainer.egg-info/PKG-INFO
+src/aistrainer.egg-info/SOURCES.txt
+src/aistrainer.egg-info/dependency_links.txt
+src/aistrainer.egg-info/requires.txt
+src/aistrainer.egg-info/top_level.txt
+src/aistrainer.egg-info/.ipynb_checkpoints/PKG-INFO-checkpoint
+src/aistrainer.egg-info/.ipynb_checkpoints/SOURCES-checkpoint.txt
+src/aistrainer.egg-info/.ipynb_checkpoints/dependency_links-checkpoint.txt
+src/aistrainer.egg-info/.ipynb_checkpoints/requires-checkpoint.txt
+src/aistrainer.egg-info/.ipynb_checkpoints/top_level-checkpoint.txt

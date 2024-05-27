@@ -1,0 +1,11 @@
+name: aist-cpu
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pytorch=2.3.0
+  - cpuonly=2.0
+
+variables:
+  TOKENIZERS_PARALLELISM: false
