@@ -2,6 +2,7 @@
 
 **Aistrainer** is a library built on top of **Hugging Face Transformers**, designed to simplify the process of fine-tuning large language models (LLMs) for developers. It focuses on making LLM fine-tuning feasible even with limited computational resources, such as Nvidia GeForce RTX 3090 GPUs. The library supports training on both GPUs and CPUs, and it includes a feature for offloading model weights to the CPU when using a single GPU. With one **Nvidia GeForce RTX 3090 GPU** and **256 GB of RAM**, Aistrainer can handle fine-tuning models with up to approximately **70 billion** parameters.
 
+
 ## Environment
 
 The Aistrainer library is compatible with the Ubuntu 22.04 operating system. To set up the required environment for this library, system tools must be installed using the command: 
@@ -29,7 +30,20 @@ sudo ubuntu-drivers install
 ## Use with JupiterLab
 If you use JupiterLab then you need to add a new kernel with a conda environment:
 ```console
-conda activate aist
+conda activate gptq
 conda install ipykernel
 ipython kernel install --user --name=aist
 ```
+
+## Using swap
+When fine-tuning models with a large number of parameters, it might be necessary to increase the operating system's swap space. This can be done using the following steps:
+
+```console
+sudo swapoff -a
+sudo fallocate -l 50G
+sudo chmod 600
+sudo mkswap /swapfile
+sudo swapon /swapfile
+```
+
+These commands will increase the swap space, providing additional virtual memory that can help manage the large memory requirements during model fine-tuning.
