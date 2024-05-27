@@ -20,6 +20,7 @@ conda env create -f environment-cpu.yml
 These steps ensure that all necessary dependencies are correctly configured, allowing the Aistrainer library to function optimally.
 
 ## Updating operating system drivers
+
 The following commands allow you to update operating system drivers:
 ```console
 sudo rm -r /var/lib/dkms/nvidia
@@ -28,6 +29,7 @@ sudo ubuntu-drivers install
 ```
 
 ## Use with JupyterLab
+
 If you use JupyterLab then you need to add a new kernel with a conda environment:
 ```console
 conda activate aist
@@ -36,6 +38,7 @@ ipython kernel install --user --name=aist
 ```
 
 ## Using swap
+
 When fine-tuning models with a large number of parameters, it might be necessary to increase the operating system's swap space. This can be done using the following steps:
 
 ```console
@@ -49,3 +52,17 @@ sudo swapon /swapfile
 These commands will increase the swap space, providing additional virtual memory that can help manage the large memory requirements during model fine-tuning.
 
 Swap should be used only in case of extreme necessity, as it can significantly slow down the training process. To ensure that the system uses swap space minimally, you should add the following line to the **/etc/sysctl.conf file**: **vm.swappiness=1**. This setting minimizes the swappiness, making the system less likely to swap processes out of physical memory and thus relying more on RAM, which is much faster than swap space.
+
+## Convensions
+
+- If a GPU is available, the Aistrainer library automatically leverages DeepSpeed to offload model weights to RAM. This optimization allows for efficient management of memory resources, enabling the fine-tuning of larger models even with limited GPU memory.
+- The Aistrainer library supports only a specific dataset format, which must include the following columns: "instruct", "input", and "output". These columns are essential for the proper functioning of the library, as they structure the data in a way that the model can interpret and learn from effectively.
+- If the eval=True parameter is passed to the prepare_dataset method, the Aistrainer library will automatically use 10% of the data in the dataset as validation data, creating an evaluation dataset. This feature allows for easy splitting of the dataset, ensuring that a portion of the data is reserved for evaluating the model's performance during training, thereby facilitating better model assessment and tuning.
+- The Aistrainer library fundamentally avoids using quantization during the fine-tuning process to prevent any potential loss of quality. This approach ensures that the experiments remain straightforward and maintain the highest possible model accuracy.
+- For combining LoRA adapters, the Aistrainer library supports only the "cat" method. In this method, the LoRA matrices are concatenated, providing a straightforward and effective approach for merging adapters.
+
+## Supported Models
+
+The following LLM models are supported:
+- Phi-3-medium-128k-instruct
+- c4ai-command-r-v01

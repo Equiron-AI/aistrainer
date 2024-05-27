@@ -18,13 +18,13 @@ deepspeed.init_distributed()
 
 
 class Aist:
-    def __init__(self, base_model_id, deepspeed=True):
+    def __init__(self, base_model_id):
         self.base_model_id = base_model_id
         self.model_config = ModelsFactory().get_model_config(base_model_id)
         self.tokenizer = self.model_config.tokenizer
         self.device_map = "auto"
         self.deepspeed = None
-        if deepspeed:
+        if torch.cuda.is_available():
             self.device_map = None
             self.deepspeed = self.get_deepspeed_config()
         self.bf16 = False
@@ -200,7 +200,7 @@ class Aist:
             self.tokenizer.save_vocabulary(merged_name)
         except:
             pass
-            
+
         del merged_model
         del peft_model
         del base_model
