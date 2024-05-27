@@ -16,7 +16,6 @@ Requires-Dist: transformers>=4.41.1
 Requires-Dist: datasets>=2.19.1
 Requires-Dist: peft>=0.11.1
 Requires-Dist: deepspeed==0.14.0
-Requires-Dist: mpi4py>=3.1.6
 Requires-Dist: sentencepiece>=0.2.0
 
 # Welcome to AISTrainer!
@@ -28,7 +27,7 @@ Requires-Dist: sentencepiece>=0.2.0
 
 The Aistrainer library is compatible with the Ubuntu 22.04 operating system. To set up the required environment for this library, system tools must be installed using the command: 
 ```console
-sudo apt install -y python3-pip cmake mpich conda
+sudo apt install -y python3-pip ccache make cmake g++ mpich conda
 ```
 To create a Python virtual environment with a GPU, use the command:
 ```console
@@ -92,3 +91,34 @@ Swap should be used only in case of extreme necessity, as it can significantly s
 The following LLM models are supported:
 - Phi-3-medium-128k-instruct
 - c4ai-command-r-v01
+
+## Training example
+```python
+import logging
+from aistrainer.aistrainer import Aist
+
+logging.basicConfig(level=logging.INFO)
+
+aist = Aist("CohereForAI/c4ai-command-r-v01")
+
+aist.prepare_dataset("equiron-ai/safety",
+                     eval=False,  # use the entire dataset only for training
+                     max_len_percentile=100)  # percentile cutting off the longest lines
+
+aist.train("safety_adapter",
+           rank=16,
+           lora_alpha=32,
+           batch_size=4,  # suitable for most cases, but should be reduced if there is not enough GPU memory
+           gradient_steps=2)  # suitable for most cases, but should be reduced if there is not enough GPU memory
+```
+
+## Combining/merging LoRA adapters
+```python
+from aistrainer.aistrainer import Aist
+
+aist = Aist("CohereForAI/c4ai-command-r-v01")
+aist.merge("model_with_safety", "safety_adapter")
+```
+
+## Known issues
+Model fine-tuning and combining adapters cannot be performed in the same bash script or Jupyter session. It is essential to separate the processes of fine-tuning and adapter merging. When using JupyterLab, you must restart the kernel after completing each of these processes to ensure proper execution and avoid conflicts.

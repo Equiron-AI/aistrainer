@@ -7,7 +7,7 @@
 
 The Aistrainer library is compatible with the Ubuntu 22.04 operating system. To set up the required environment for this library, system tools must be installed using the command: 
 ```console
-sudo apt install -y python3-pip cmake mpich conda
+sudo apt install -y python3-pip ccache make cmake g++ mpich conda
 ```
 To create a Python virtual environment with a GPU, use the command:
 ```console

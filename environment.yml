@@ -4,12 +4,12 @@ channels:
   - conda-forge
   - nvidia/label/cuda-12.1.0
 dependencies:
+  - pip
   - python=3.11
+  - packaging
   - nvidia/label/cuda-12.1.0::libcublas
   - pytorch-cuda=12.1
   - pytorch=2.3.0
   - pip:
     - flash-attn>=2.5.8
     - mpi4py>=3.1.6
-variables:
-  TOKENIZERS_PARALLELISM: false
