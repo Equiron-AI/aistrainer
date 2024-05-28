@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aistrainer"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Vladimir Petrukhin", email="man4j@ya.ru" },
 ]

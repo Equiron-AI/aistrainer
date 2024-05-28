@@ -28,11 +28,9 @@ class Aist:
         self.base_model_id = base_model_id
         self.model_config = ModelsFactory().get_model_config(base_model_id)
         self.tokenizer = self.model_config.tokenizer
-        self.torch_compile = False
         self.device_map = "auto"
         self.deepspeed = None
         if torch.cuda.is_available():
-            self.torch_compile = True
             self.device_map = None
             self.deepspeed = self.get_deepspeed_config()
         self.bf16 = False
@@ -141,7 +139,6 @@ class Aist:
                                  gradient_checkpointing=True,
                                  bf16=self.bf16,
                                  fp16=self.fp16,
-                                 torch_compile=True,
                                  per_device_train_batch_size=batch_size,
                                  per_device_eval_batch_size=batch_size,
                                  gradient_accumulation_steps=gradient_steps,
