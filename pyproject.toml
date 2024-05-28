@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aistrainer"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Vladimir Petrukhin", email="man4j@ya.ru" },
 ]
-description = "AI Specialization Trainer for LLM model"
+description = "AI Specialization Trainer for LLM models"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
