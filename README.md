@@ -86,7 +86,10 @@ aist.train("safety_adapter",
 
 ## Combining/merging LoRA adapters
 ```python
+import logging
 from aistrainer.aistrainer import Aist
+
+logging.basicConfig(level=logging.INFO)
 
 aist = Aist("CohereForAI/c4ai-command-r-v01")
 aist.merge("model_with_safety", "safety_adapter")

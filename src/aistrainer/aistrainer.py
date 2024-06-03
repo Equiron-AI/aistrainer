@@ -91,7 +91,7 @@ class Aist:
         logger.info("Train dataset:")
         logger.info(self.train_dataset)
 
-    def train(self, adapter_name, rank=16, lora_alpha=32, num_train_epochs=1, batch_size=4, gradient_steps=2):
+    def train(self, adapter_name, rank=32, lora_alpha=64, num_train_epochs=1, batch_size=4, gradient_steps=2):
         if not self.train_dataset:
             raise Exception("Dataset is not initialized")
         evaluation_strategy = "no"
@@ -116,7 +116,6 @@ class Aist:
             logger.info("deepspeed: enabled")
         logger.info(f"lora_rank: {rank}")
         logger.info(f"lora_alfa: {lora_alpha}")
-        logger.info("rs_lora: enabled")
         logger.info("dora: disabled")
         logger.info(f"target_modules: {self.model_config.target_modules}")
         visible_devices = os.environ['CUDA_VISIBLE_DEVICES']
@@ -147,9 +146,9 @@ class Aist:
 
         lora_config = LoraConfig(r=rank,
                                  lora_alpha=lora_alpha,
-                                 use_rslora=True,
                                  target_modules=self.model_config.target_modules,
                                  lora_dropout=0.05,
+                                 # use_rslora=rs_lora,
                                  # use_dora=True,
                                  # init_lora_weights="pissa",
                                  task_type="CAUSAL_LM")
