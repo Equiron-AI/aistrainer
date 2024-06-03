@@ -106,7 +106,7 @@ llama.cpp/build/bin/quantize model.gguf model_q5_k_m.gguf q5_k_m
 
 ## Run with Llama.CPP Server on GPU
 ```console
-llama.cpp/build/bin/server -m model_q5_k_m.gguf -ngl 99 -fa -cb -c 4096 --host 0.0.0.0 --port 8000
+llama.cpp/build/bin/server -m model_q5_k_m.gguf -ngl 99 -fa -c 4096 --host 0.0.0.0 --port 8000
 ```
 
 ## Install CUDA toolkit for Llama.cpp compilation
