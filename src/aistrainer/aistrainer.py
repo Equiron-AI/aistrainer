@@ -12,7 +12,7 @@ import json
 import gc
 import deepspeed
 from deepspeed.accelerator import get_accelerator
-from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling
+from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, AutoTokenizer
 from peft import LoraConfig, get_peft_model, PeftModel
 from aistrainer.models import ModelsFactory
 
@@ -198,9 +198,12 @@ class Aist:
             merged_model = peft_model.merge_and_unload()
 
         merged_model.save_pretrained(merged_name)
-        self.tokenizer.save_pretrained(merged_name)
+
+        # get original tokenizer for save
+        tmp_tokenizer = AutoTokenizer.from_pretrained(self.base_model_id)
+        tmp_tokenizer.save_pretrained(merged_name)
         try:
-            self.tokenizer.save_vocabulary(merged_name)
+            tmp_tokenizer.save_vocabulary(merged_name)
         except:
             pass
 
