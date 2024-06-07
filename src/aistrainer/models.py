@@ -20,7 +20,7 @@ class Phi3Model(BaseModel):
         inst = record["instruct"]
         inpt = record["input"]
         outp = record["output"]
-        return f"""<|system|>
+        return f"""<s><|system|>
 {inst}<|end|>
 <|user|>{inpt}<|end|>
 <|assistant|>{outp}<|end|>
