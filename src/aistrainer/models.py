@@ -41,6 +41,20 @@ class CommandRModel(BaseModel):
         return self.tokenizer.apply_chat_template(chat, tokenize=False)
 
 
+class Qwen2(BaseModel):
+    def __init__(self, base_model_id, config):
+        BaseModel.__init__(self, base_model_id, config)
+        self.target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+    def apply_chat_template(self, record):
+        chat = [
+            {"role": "system", "content": record["instruct"]},
+            {"role": "user", "content": record["input"]},
+            {"role": "assistant", "content": record["output"]}
+        ]
+        return self.tokenizer.apply_chat_template(chat, tokenize=False)
+
+
 class ModelsFactory:
     def __init__(self):
         pass
@@ -51,6 +65,8 @@ class ModelsFactory:
         if config.model_type == "phi3":
             return Phi3Model(base_model_id, config)
         elif config.model_type == "cohere":
+            return CommandRModel(base_model_id, config)
+        elif config.model_type == "qwen2":
             return CommandRModel(base_model_id, config)
         else:
             raise Exception("Unsupported model type: " + base_model_id)
