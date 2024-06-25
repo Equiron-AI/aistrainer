@@ -107,7 +107,7 @@ class Aist:
         logger.info("AISTrainer hyperparameters:")
         logger.info(f"fp16: {self.fp16}")
         logger.info(f"bf16: {self.bf16}")
-        logger.info(f"flash_attensions: {self.attn_implementation}")
+        logger.info(f"flash_attentions: {self.attn_implementation}")
         logger.info(f"batch_size: {batch_size}")
         logger.info(f"gradient_steps: {gradient_steps}")
         if self.deepspeed is None:

@@ -41,7 +41,7 @@ class CommandRModel(BaseModel):
         return self.tokenizer.apply_chat_template(chat, tokenize=False)
 
 
-class Qwen2(BaseModel):
+class Qwen2Model(BaseModel):
     def __init__(self, base_model_id, config):
         BaseModel.__init__(self, base_model_id, config)
         self.target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
@@ -67,6 +67,6 @@ class ModelsFactory:
         elif config.model_type == "cohere":
             return CommandRModel(base_model_id, config)
         elif config.model_type == "qwen2":
-            return CommandRModel(base_model_id, config)
+            return Qwen2Model(base_model_id, config)
         else:
             raise Exception("Unsupported model type: " + base_model_id)
