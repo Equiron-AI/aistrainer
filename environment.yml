@@ -1,14 +1,14 @@
-name: aist
+name: aist-test1
 channels:
   - pytorch
   - conda-forge
-  - nvidia/label/cuda-12.1.0
+  - nvidia/label/cuda-12.4.0
 dependencies:
   - pip
   - python=3.11
-  - nvidia/label/cuda-12.1.0::libcublas
-  - pytorch-cuda=12.1
-  - pytorch=2.3.0
+  - nvidia/label/cuda-12.4.0::libcublas
+  - pytorch-cuda=12.4
+  - pytorch=2.4.1
   - pip:
-    - flash-attn>=2.5.8
-    - mpi4py>=3.1.6
+    - flash-attn>=2.6.3
+    - mpi4py>=4.0.0

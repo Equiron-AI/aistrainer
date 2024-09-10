@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: aistrainer
-Version: 0.0.10
+Version: 0.0.12
 Summary: AI Specialization Trainer for LLM models
 Author-email: Vladimir Petrukhin <man4j@ya.ru>
 Project-URL: Homepage, https://github.com/Equiron-AI/aistrainer
@@ -12,10 +12,10 @@ Classifier: Operating System :: OS Independent
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: transformers>=4.41.1
-Requires-Dist: datasets>=2.20.0
-Requires-Dist: peft>=0.11.1
-Requires-Dist: deepspeed==0.14.0
+Requires-Dist: transformers>=4.44.2
+Requires-Dist: datasets>=2.21.0
+Requires-Dist: peft>=0.12.0
+Requires-Dist: deepspeed==0.15.1
 Requires-Dist: sentencepiece>=0.2.0
 
 # Welcome to AISTrainer!

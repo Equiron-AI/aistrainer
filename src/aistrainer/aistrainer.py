@@ -116,7 +116,6 @@ class Aist:
             logger.info("deepspeed: enabled")
         logger.info(f"lora_rank: {rank}")
         logger.info(f"lora_alfa: {lora_alpha}")
-        logger.info("dora: disabled")
         logger.info(f"target_modules: {self.model_config.target_modules}")
         visible_devices = os.environ['CUDA_VISIBLE_DEVICES']
         logger.info(f"visible_devices: {visible_devices}")
@@ -148,13 +147,12 @@ class Aist:
                                  lora_alpha=lora_alpha,
                                  target_modules=self.model_config.target_modules,
                                  lora_dropout=0.05,
-                                 # use_rslora=rs_lora,
-                                 # use_dora=True,
-                                 # init_lora_weights="pissa",
+                                 # init_lora_weights="olora",
                                  task_type="CAUSAL_LM")
 
         base_model = self.load_base_model()
         peft_model = get_peft_model(base_model, lora_config)
+        logger.info(peft_model.get_model_status())
         trainer = Trainer(model=peft_model,
                           train_dataset=self.train_dataset,
                           eval_dataset=eval_dataset,
@@ -163,40 +161,31 @@ class Aist:
         trainer.train()
         trainer.save_model(adapter_name)
 
-        del peft_model
-        del base_model
-        del trainer
-        gc.collect()
-        torch.cuda.empty_cache()
-        get_accelerator().empty_cache()
-        deepspeed.runtime.utils.empty_cache()
-
     def merge(self, merged_name, *adapters):
         first_adapter = adapters[0]
         base_model = self.load_base_model(False)
         peft_model = PeftModel.from_pretrained(base_model, first_adapter, torch_dtype=torch.bfloat16)
-
+        adapter_names = None
         if len(adapters) > 1:
             names = ["default"]
             weights = [1.0]
+            adapter_names = ["merged"]
 
             for i in range(1, len(adapters)):
                 peft_model.load_adapter(adapters[i], adapter_name=str(i))
                 names.append(str(i))
                 weights.append(1.0)
 
-            logger.info(f"Merging adapters: {names} to {merged_name}")
-
+            logger.info(f"Merging adapters: {names} -> {merged_name}")
             peft_model.add_weighted_adapter(adapters=names,
                                             weights=weights,
                                             adapter_name="merged",
                                             combination_type="cat")
-
-            merged_model = peft_model.merge_and_unload(adapter_names=["merged"])
         else:
-            logger.info(f"Merging adapter {first_adapter} to {merged_name}")
-            merged_model = peft_model.merge_and_unload()
+            logger.info(f"Merging adapter: {first_adapter} -> {merged_name}")
 
+        logger.info(peft_model.get_layer_status())
+        merged_model = peft_model.merge_and_unload(adapter_names=adapter_names)
         merged_model.save_pretrained(merged_name)
 
         # get original tokenizer for save
@@ -206,12 +195,6 @@ class Aist:
             tmp_tokenizer.save_vocabulary(merged_name)
         except:
             pass
-
-        del merged_model
-        del peft_model
-        del base_model
-        gc.collect()
-        torch.cuda.empty_cache()
 
     def load_base_model(self, gradient_checkpointing=True):
         self.base_model = AutoModelForCausalLM.from_pretrained(self.base_model_id,
@@ -226,23 +209,20 @@ class Aist:
         return self.base_model
 
     def get_deepspeed_config(self):
-        json_str = '''
-        {
-            "zero_force_ds_cpu_optimizer": false,
+        hidden_size = self.model_config.config.hidden_size
+        return {
+            "zero_force_ds_cpu_optimizer": False,
             "bf16": {"enabled": "auto"},
             "zero_optimization": {
                 "stage": 3,
                 "offload_optimizer": {"device": "cpu"},
                 "offload_param": {"device": "cpu"},
-                "overlap_comm": true,
-                "reduce_bucket_size": "auto",
-                "contiguous_gradients": true,
+                "overlap_comm": True,
                 "sub_group_size": 1e9,
-                "stage3_max_live_parameters": 1e9,
-                "stage3_max_reuse_distance": 1e9,
-                "stage3_prefetch_bucket_size": "auto",
+                "reduce_bucket_size": "auto",
+                "stage3_prefetch_bucket_size": int(0.9 * hidden_size * hidden_size), # auto почему-то не работает
                 "stage3_param_persistence_threshold": "auto",
-                "stage3_gather_16bit_weights_on_model_save": true
+                "gather_16bit_weights_on_model_save": True
             },
             "gradient_accumulation_steps": "auto",
             "gradient_clipping": "auto",
@@ -250,5 +230,3 @@ class Aist:
             "train_batch_size": "auto",
             "train_micro_batch_size_per_gpu": "auto"
         }
-        '''
-        return json.loads(json_str)
