@@ -147,7 +147,7 @@ class Aist:
                                  lora_alpha=lora_alpha,
                                  target_modules=self.model_config.target_modules,
                                  lora_dropout=0.05,
-                                 # init_lora_weights="olora",
+                                 init_lora_weights="olora",
                                  task_type="CAUSAL_LM")
 
         base_model = self.load_base_model()
