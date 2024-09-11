@@ -184,7 +184,6 @@ class Aist:
         else:
             logger.info(f"Merging adapter: {first_adapter} -> {merged_name}")
 
-        logger.info(peft_model.get_layer_status())
         merged_model = peft_model.merge_and_unload(adapter_names=adapter_names)
         merged_model.save_pretrained(merged_name)
 
