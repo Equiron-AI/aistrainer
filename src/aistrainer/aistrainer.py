@@ -8,10 +8,7 @@ import torch
 import numpy as np
 import torch._dynamo
 import logging
-import json
-import gc
 import deepspeed
-from deepspeed.accelerator import get_accelerator
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, AutoTokenizer
 from peft import LoraConfig, get_peft_model, PeftModel
 from aistrainer.models import ModelsFactory
@@ -91,7 +88,7 @@ class Aist:
         logger.info("Train dataset:")
         logger.info(self.train_dataset)
 
-    def train(self, adapter_name, rank=32, lora_alpha=64, num_train_epochs=1, batch_size=4, gradient_steps=2):
+    def train(self, adapter_name, rank=32, lora_alpha=64, lora_dropout=0.1, num_train_epochs=1, batch_size=4, gradient_steps=2, init_lora_weights=True):
         if not self.train_dataset:
             raise Exception("Dataset is not initialized")
         evaluation_strategy = "no"
@@ -146,8 +143,8 @@ class Aist:
         lora_config = LoraConfig(r=rank,
                                  lora_alpha=lora_alpha,
                                  target_modules=self.model_config.target_modules,
-                                 lora_dropout=0.05,
-                                 init_lora_weights="olora",
+                                 lora_dropout=lora_dropout,
+                                 init_lora_weights=init_lora_weights,
                                  task_type="CAUSAL_LM")
 
         base_model = self.load_base_model()
@@ -219,7 +216,7 @@ class Aist:
                 "overlap_comm": True,
                 "sub_group_size": 1e9,
                 "reduce_bucket_size": "auto",
-                "stage3_prefetch_bucket_size": int(0.9 * hidden_size * hidden_size), # auto почему-то не работает
+                "stage3_prefetch_bucket_size": int(0.9 * hidden_size * hidden_size),  # auto почему-то не работает
                 "stage3_param_persistence_threshold": "auto",
                 "gather_16bit_weights_on_model_save": True
             },
