@@ -22,10 +22,9 @@ class BaseModel:
 class Gemma2Model(BaseModel):
     def __init__(self, base_model_id, config):
         BaseModel.__init__(self, base_model_id, config)
-        self.response_template = "<start_of_turn>model"
 
     def apply_chat_template(self, record):
-        if "text" in record:
+        if "text" in record and record["text"]:
             return record["text"]
 
         inst = record["instruct"]
@@ -40,13 +39,12 @@ class Gemma2Model(BaseModel):
 """
 
 
-class CommandRModel(BaseModel):
+class CohereModel(BaseModel):
     def __init__(self, base_model_id, config):
         BaseModel.__init__(self, base_model_id, config)
-        self.response_template = "<|CHATBOT_TOKEN|>"
 
     def apply_chat_template(self, record):
-        if "text" in record:
+        if "text" in record and record["text"]:
             return record["text"]
 
         inst = record["instruct"]
@@ -70,6 +68,6 @@ class ModelsFactory:
         if config.model_type == "gemma2":
             return Gemma2Model(base_model_id, config)
         elif config.model_type == "cohere":
-            return CommandRModel(base_model_id, config)
+            return CohereModel(base_model_id, config)
         else:
             raise Exception("Unsupported model type: " + base_model_id)

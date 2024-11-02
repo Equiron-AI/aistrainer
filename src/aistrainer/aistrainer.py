@@ -76,11 +76,10 @@ class Aist:
         logger.info(dataset["input_ids"][0])
         logger.info("---------------------------------------------")
 
-        self.sft = True
         if "text" in dataset.column_names:
             dataset = dataset.remove_columns(["text"])
-            self.sft = False
-        else:
+
+        if "instruct" in dataset.column_names:
             dataset = dataset.remove_columns(["instruct", "input", "output"])
 
         if eval:
@@ -157,12 +156,6 @@ class Aist:
         base_model = self.load_base_model()
         peft_model = get_peft_model(base_model, lora_config)
         logger.info(peft_model.get_model_status())
-
-        # if self.sft:
-        #     logger.info("Using data collator: CompletionOnlyLM")
-        #     data_collator = DataCollatorForCompletionOnlyLM(self.model_config.response_template, tokenizer=self.tokenizer)
-        # else:
-        logger.info("Using data collator: LanguageModeling")
         data_collator = DataCollatorForLanguageModeling(tokenizer=self.tokenizer, mlm=False)
 
         trainer = Trainer(model=peft_model,
@@ -173,32 +166,12 @@ class Aist:
         trainer.train()
         trainer.save_model(adapter_name)
 
-    def merge(self, merged_name, *adapters):
-        first_adapter = adapters[0]
+    def merge(self, merged_name, first_adapter):
         base_model = self.load_base_model(False)
         peft_model = PeftModel.from_pretrained(base_model, first_adapter, torch_dtype=torch.bfloat16)
-        adapter_names = None
-        if len(adapters) > 1:
-            names = ["default"]
-            weights = [1.0]
-            adapter_names = ["merged"]
-
-            for i in range(1, len(adapters)):
-                peft_model.load_adapter(adapters[i], adapter_name=str(i))
-                names.append(str(i))
-                weights.append(1.0)
-
-            logger.info(f"Merging adapters: {names} -> {merged_name}")
-            peft_model.add_weighted_adapter(adapters=names,
-                                            weights=weights,
-                                            adapter_name="merged",
-                                            combination_type="cat")
-        else:
-            logger.info(f"Merging adapter: {first_adapter} -> {merged_name}")
-
-        merged_model = peft_model.merge_and_unload(adapter_names=adapter_names)
+        logger.info(f"Merging adapter: {first_adapter} -> {merged_name}")
+        merged_model = peft_model.merge_and_unload()
         merged_model.save_pretrained(merged_name)
-
         # get original tokenizer for save
         tmp_tokenizer = AutoTokenizer.from_pretrained(self.base_model_id)
         tmp_tokenizer.save_pretrained(merged_name)
