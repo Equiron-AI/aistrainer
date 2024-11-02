@@ -10,6 +10,7 @@ import torch._dynamo
 import logging
 import deepspeed
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, AutoTokenizer
+# from trl import DataCollatorForCompletionOnlyLM
 from peft import LoraConfig, get_peft_model, PeftModel
 from aistrainer.models import ModelsFactory
 
@@ -74,7 +75,13 @@ class Aist:
         dataset = dataset.map(self.map_func)
         logger.info(dataset["input_ids"][0])
         logger.info("---------------------------------------------")
-        dataset = dataset.remove_columns(["instruct", "input", "output"])
+
+        self.sft = True
+        if "text" in dataset.column_names:
+            dataset = dataset.remove_columns(["text"])
+            self.sft = False
+        else:
+            dataset = dataset.remove_columns(["instruct", "input", "output"])
 
         if eval:
             dataset = dataset.train_test_split(test_size=0.1)
@@ -150,10 +157,18 @@ class Aist:
         base_model = self.load_base_model()
         peft_model = get_peft_model(base_model, lora_config)
         logger.info(peft_model.get_model_status())
+
+        # if self.sft:
+        #     logger.info("Using data collator: CompletionOnlyLM")
+        #     data_collator = DataCollatorForCompletionOnlyLM(self.model_config.response_template, tokenizer=self.tokenizer)
+        # else:
+        logger.info("Using data collator: LanguageModeling")
+        data_collator = DataCollatorForLanguageModeling(tokenizer=self.tokenizer, mlm=False)
+
         trainer = Trainer(model=peft_model,
                           train_dataset=self.train_dataset,
                           eval_dataset=eval_dataset,
-                          data_collator=DataCollatorForLanguageModeling(tokenizer=self.tokenizer, mlm=False),
+                          data_collator=data_collator,
                           args=args)
         trainer.train()
         trainer.save_model(adapter_name)
