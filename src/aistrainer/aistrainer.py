@@ -10,7 +10,7 @@ import torch._dynamo
 import logging
 import deepspeed
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, AutoTokenizer
-# from trl import DataCollatorForCompletionOnlyLM
+from trl import DataCollatorForCompletionOnlyLM
 from peft import LoraConfig, get_peft_model, PeftModel
 from aistrainer.models import ModelsFactory
 
@@ -76,8 +76,10 @@ class Aist:
         logger.info(dataset["input_ids"][0])
         logger.info("---------------------------------------------")
 
+        # self.sft = True
         if "text" in dataset.column_names:
             dataset = dataset.remove_columns(["text"])
+            # self.sft = False
 
         if "instruct" in dataset.column_names:
             dataset = dataset.remove_columns(["instruct", "input", "output"])
@@ -146,6 +148,7 @@ class Aist:
                                  eval_accumulation_steps=1,
                                  deepspeed=self.deepspeed)
 
+        # в документации по Cohere Aya указаны параметры r=32, lora_alpha=32
         lora_config = LoraConfig(r=rank,
                                  lora_alpha=lora_alpha,
                                  target_modules=self.model_config.target_modules,
@@ -156,6 +159,13 @@ class Aist:
         base_model = self.load_base_model()
         peft_model = get_peft_model(base_model, lora_config)
         logger.info(peft_model.get_model_status())
+
+        # self.sft = False
+        # if self.sft:
+        #    logger.info("Using data collator: CompletionOnlyLM")
+        #    data_collator = DataCollatorForCompletionOnlyLM(self.model_config.response_template, tokenizer=self.tokenizer)
+        # else:
+        logger.info("Using data collator: LanguageModeling")
         data_collator = DataCollatorForLanguageModeling(tokenizer=self.tokenizer, mlm=False)
 
         trainer = Trainer(model=peft_model,
