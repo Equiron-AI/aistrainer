@@ -53,7 +53,8 @@ class Aist:
                               padding="max_length")
 
     def filter_func(self, record):
-        return len(self.tokenizer(self.get_instruction(record))["input_ids"]) <= self.max_len
+        length = len(self.tokenizer(self.get_instruction(record))["input_ids"])
+        return length <= self.max_len
 
     def prepare_dataset(self, dataset, eval=False, max_len_percentile=95):
         self.eval = eval
@@ -71,8 +72,11 @@ class Aist:
         logger.info("---------------------------------------------")
         logger.info(self.get_instruction(dataset[0]))
         logger.info("---------------------------------------------")
-        dataset = dataset.filter(self.filter_func)
+        print("DS before filtering:", dataset)
+        dataset = dataset.filter(lambda record: self.filter_func(record))
+        print("DS after filtering:", dataset)
         dataset = dataset.map(self.map_func)
+        print("DS after mapping:", dataset)
         logger.info(dataset["input_ids"][0])
         logger.info("---------------------------------------------")
 
