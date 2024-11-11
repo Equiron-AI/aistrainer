@@ -53,7 +53,7 @@ class Aist:
                               padding="max_length")
 
     def filter_func(self, record):
-        return len(self.tokenizer(self.get_instruction(record))["input_ids"]) < self.max_len
+        return len(self.tokenizer(self.get_instruction(record))["input_ids"]) <= self.max_len
 
     def prepare_dataset(self, dataset, eval=False, max_len_percentile=95):
         self.eval = eval
